@@ -7,6 +7,14 @@ terraform {
       source = "CiscoDevNet/iosxe"
     }
   }
+  cloud { 
+    
+    organization = "EQIX_projectX" 
+
+    workspaces { 
+      name = "network_builder" 
+    } 
+  } 
 }
 
 provider "iosxe" {
