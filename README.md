@@ -20,18 +20,14 @@ It acts nothing more than above at the time writing the code today.   There will
 
 **terraform.tfvars** (sample)
 ```terraform
-core_count         = 2
-metro_code         = "SG"
-notifications      = ["name@equinix.com"]
-package_code       = "network-essentials"
-sec_metro_code     = "OS"
-type_code          = "C8000V"
-account_number     = "svc_account"
-sec_account_number = "svc_account"
-ver                = "17.06.01a"
-username           = "username"
-key_name           = "pubkey"
-acl_template_id    = "uuid"
+vnf_asn        = "65120"
+int            = "7"
+int_desc       = "to-mg"
+bw             = 500000
+username       = "username"
+metro_code     = "SG"
+sec_metro_code = "OS"
+neighbor_desc  = "to-metal_gateway"
 ```  
 
 
