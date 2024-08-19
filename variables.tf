@@ -1,8 +1,11 @@
 variable "username" {}
-variable "int" {}
-variable "int_desc" {}
+variable "int_pri" {}
+variable "int_sec" {}
+variable "int_desc_pri" {}
+variable "int_desc_sec" {}
 variable "bw" {}
 variable "metro_code" {}
 variable "sec_metro_code" {}
 variable "vnf_asn" {}
-variable "neighbor_desc" {}
+variable "neighbor_desc_pri" {}
+variable "neighbor_desc_sec" {}
