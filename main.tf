@@ -12,7 +12,7 @@ terraform {
     organization = "EQIX_projectX"
 
     workspaces {
-      name = "network_builder"
+      name = "network_builder_apac"
     }
   }
 }
