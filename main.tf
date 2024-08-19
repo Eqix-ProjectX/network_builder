@@ -31,7 +31,7 @@ provider "iosxe" {
 }
 
 data "equinix_network_device" "vd_pri" {
-  name = "vd-${var.metro_code}-${var.username}-pre"
+  name = "vd-${var.metro_code}-${var.username}-pri"
 }
 data "equinix_network_device" "vd_sec" {
   name = "vd-${var.sec_metro_code}-${var.username}-sec"
