@@ -20,25 +20,33 @@ terraform {
 provider "iosxe" {
   alias    = "vd_pri"
   username = var.username
-  password = data.equinix_network_device.vd_pri.vendor_configuration.adminPassword
-  url      = "https://${data.equinix_network_device.vd_pri.ssh_ip_address}"
+  password = data.terraform_remote_state.ne.outputs.vd_password
+  url      = "https://${data.terraform_remote_state.ne.outputs.ssh_ip_vd}"
 }
 provider "iosxe" {
   alias    = "vd_sec"
   username = var.username
-  password = data.equinix_network_device.vd_sec.vendor_configuration.adminPassword
-  url      = "https://${data.equinix_network_device.vd_sec.ssh_ip_address}"
+  password = data.terraform_remote_state.ne.outputs.vd_password_sec
+  url      = "https://${data.terraform_remote_state.ne.outputs.ssh_ip_vd_sec}"
 }
 
-data "equinix_network_device" "vd_pri" {
-  name = "vd-${var.metro_code}-${var.username}-pri"
-}
-data "equinix_network_device" "vd_sec" {
-  name = "vd-${var.sec_metro_code}-${var.username}-sec"
+# data "equinix_network_device" "vd_pri" {
+#   name = "vd-${var.metro_code}-${var.username}-pri"
+# }
+# data "equinix_network_device" "vd_sec" {
+#   name = "vd-${var.sec_metro_code}-${var.username}-sec"
+# }
+data "terraform_remote_state" "ne" {
+  backend = "remote"
+  config = {
+    organization = "EQIX_projectX"
+    workspaces = {
+      name = "ne-apac"
+    }
+  }
 }
 data "terraform_remote_state" "bgp" {
   backend = "remote"
-
   config = {
     organization = "EQIX_projectX"
     workspaces = {
