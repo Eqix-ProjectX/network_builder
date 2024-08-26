@@ -206,7 +206,7 @@ resource "equinix_metal_connection" "pri_vc1" {
   type = "shared"
   vlans = [
     data.terraform_remote_state.bgp.outputs.vlan_pri,
-    data.terraform_remote_state.bgp.output.vlan_sec
+    data.terraform_remote_state.bgp.outputs.vlan_sec
   ]
 }
 
