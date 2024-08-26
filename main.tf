@@ -188,25 +188,10 @@ resource "iosxe_bgp_neighbor" "neighbor_sec2" {
   log_neighbor_changes    = true
 }
 
-
-# resource "iosxe_save_config" "write_pri" {
-#   provider = iosxe.vd_pri
-# }
-# resource "iosxe_save_config" "write_sec" {
-#   provider = iosxe.vd_sec
-# }
-
-
-# VC creation
-resource "equinix_metal_connection" "pri_vc1" {
-  name = var.pri_vc1
-  project_id = var.project_id
-  metro = var.metro_code
-  redundancy = "redundant"
-  type = "shared"
-  vlans = [
-    data.terraform_remote_state.bgp.outputs.vlan_pri,
-    data.terraform_remote_state.bgp.outputs.vlan_sec
-  ]
+resource "iosxe_save_config" "write_pri" {
+  provider = iosxe.vd_pri
+}
+resource "iosxe_save_config" "write_sec" {
+  provider = iosxe.vd_sec
 }
 
