@@ -147,42 +147,6 @@ resource "iosxe_bgp" "bgp_sec" {
   log_neighbor_changes = true
 }
 
-# resource "iosxe_bgp_address_family_ipv4" "ipv4_pri" {
-#   provider                            = iosxe.vd_pri
-#   asn                                 = var.vnf_asn
-#   af_name                             = "unicast"
-#   ipv4_unicast_redistribute_connected = true
-#   ipv4_unicast_redistribute_static    = true
-# }
-# resource "iosxe_bgp_address_family_ipv4" "ipv4_sec" {
-#   provider                            = iosxe.vd_sec
-#   asn                                 = var.vnf_asn
-#   af_name                             = "unicast"
-#   ipv4_unicast_redistribute_connected = true
-#   ipv4_unicast_redistribute_static    = true
-# }
-
-# resource "iosxe_bgp_ipv4_unicast_neighbor" "neighbor_pri" {
-#   provider             = iosxe.vd_pri
-#   asn                  = data.terraform_remote_state.bgp.outputs.vrf_asn
-#   ip                   = local.ipv4_mg
-#   activate             = true
-#   soft_reconfiguration = "inbound"
-#   send_community              = "both"
-#   route_reflector_client      = false
-#   default_originate           = true
-# }
-# resource "iosxe_bgp_ipv4_unicast_neighbor" "neighbor_sec" {
-#   provider             = iosxe.vd_sec
-#   asn                  = data.terraform_remote_state.bgp.outputs.vrf_asn
-#   ip                   = local.ipv4_mg
-#   activate             = true
-#   soft_reconfiguration = "inbound"
-#   send_community              = "both"
-#   route_reflector_client      = false
-#   default_originate           = true
-# }
-
 resource "iosxe_bgp_neighbor" "neighbor_pri1" {
   provider                = iosxe.vd_pri
   asn                     = var.vnf_asn
@@ -231,3 +195,18 @@ resource "iosxe_bgp_neighbor" "neighbor_sec2" {
 # resource "iosxe_save_config" "write_sec" {
 #   provider = iosxe.vd_sec
 # }
+
+
+# VC creation
+resource "equinix_metal_connection" "pri_vc1" {
+  name = var.pri_vc1
+  project_id = var.project_id
+  metro = var.metro_code
+  redundancy = "redundant"
+  type = "shared"
+  vlans = [
+    data.terraform_remote_state.bgp.outputs.vlan_pri,
+    data.terraform_remote_state.bgp.output.vlan_sec
+  ]
+}
+

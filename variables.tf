@@ -4,8 +4,13 @@ variable "int_sec" {}
 variable "int_desc_pri" {}
 variable "int_desc_sec" {}
 variable "bw" {}
+variable "project_id" {}
 variable "metro_code" {}
 variable "sec_metro_code" {}
 variable "vnf_asn" {}
 variable "neighbor_desc_pri" {}
 variable "neighbor_desc_sec" {}
+variable "pri_vc1" {}
+variable "pri_vc2" {}
+variable "sec_vc1" {}
+variable "sec_vc2" {}
