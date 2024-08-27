@@ -10,7 +10,6 @@ variable "sec_metro_code" {}
 variable "vnf_asn" {}
 variable "neighbor_desc_pri" {}
 variable "neighbor_desc_sec" {}
-variable "pri_vc1" {}
-variable "pri_vc2" {}
-variable "sec_vc1" {}
-variable "sec_vc2" {}
+variable "pri_vc" {}
+variable "sec_vc" {}
+variable "emails" {}
