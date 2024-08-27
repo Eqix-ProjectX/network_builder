@@ -195,3 +195,71 @@ resource "iosxe_save_config" "write_sec" {
   provider = iosxe.vd_sec
 }
 
+resource "equinix_fabric_connection" "vd2mg_pri" {
+  name = var.pri_vc
+  type = "EVPL_VC"
+  redundancy {
+    priority = "PRIMARY"
+  }
+  notifications {
+    type   = "ALL"
+    emails = var.emails
+  }
+  bandwidth = 50
+  # order {
+  #   purchase_order_number = "1-323292"
+  # }
+  a_side {
+    access_point {
+      type = "VD"
+      virtual_device {
+        type = "EDGE"
+        uuid = data.terraform_remote_state.ne.outputs.hostname_vd.uuid
+      }
+      interface {
+        type = "NETWORK"
+        id = 7
+      }
+    }
+  }
+  z_side {
+    service_token {
+      uuid = data.terraform_remote_state.bgp.outputs.connection_token_pri
+    }
+  }
+}
+
+resource "equinix_fabric_connection" "vd2mg_sec" {
+  name = var.sec_vc
+  type = "EVPL_VC"
+  redundancy {
+    priority = "SECONDARY"
+    group = one(equinix_fabric_connection.vd2mg_pri.redundancy).group
+  }
+  notifications {
+    type   = "ALL"
+    emails = var.emails
+  }
+  bandwidth = 50
+  # order {
+  #   purchase_order_number = "1-323292"
+  # }
+  a_side {
+    access_point {
+      type = "VD"
+      virtual_device {
+        type = "EDGE"
+        uuid = data.terraform_remote_state.ne.outputs.hostname_vd_sec.uuid
+      }
+      interface {
+        type = "NETWORK"
+        id = 7
+      }
+    }
+  }
+  z_side {
+    service_token {
+      uuid = data.terraform_remote_state.bgp.outputs.connection_token_sec
+  }
+  }
+}
