@@ -214,7 +214,7 @@ resource "equinix_fabric_connection" "vd2mg_pri" {
       type = "VD"
       virtual_device {
         type = "EDGE"
-        uuid = data.terraform_remote_state.ne.outputs.hostname_vd.uuid
+        uuid = data.terraform_remote_state.ne.outputs.vd_uuid
       }
       interface {
         type = "NETWORK"
@@ -249,7 +249,7 @@ resource "equinix_fabric_connection" "vd2mg_sec" {
       type = "VD"
       virtual_device {
         type = "EDGE"
-        uuid = data.terraform_remote_state.ne.outputs.hostname_vd_sec.uuid
+        uuid = data.terraform_remote_state.ne.outputs.vd_uuid_sec
       }
       interface {
         type = "NETWORK"
