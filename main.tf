@@ -73,7 +73,9 @@ locals {
 # locals {
 #   ipv4_sec2 = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 3)
 # }
-
+locals {
+  mail = trim(var.emails, "[")
+}
 # IOS-XE configuration
 resource "iosxe_interface_ethernet" "interface_pri" {
   provider                         = iosxe.vd_pri
@@ -307,7 +309,7 @@ resource "equinix_metal_connection" "mg2vd" {
   metro         = var.metro_code
   redundancy    = "redundant"
   type          = "shared"
-  contact_email = tostring(var.emails)
+  contact_email = trim(local.mail, "]")
   vrfs = [
     data.terraform_remote_state.bgp.outputs.vrf_pri,
     data.terraform_remote_state.bgp.outputs.vrf_sec
