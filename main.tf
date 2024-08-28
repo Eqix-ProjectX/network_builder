@@ -96,7 +96,7 @@ resource "iosxe_interface_ethernet" "interface_sec" {
   type                             = "GigabitEthernet"
   name                             = var.int
   bandwidth                        = var.bw
-  description                      = var.int
+  description                      = var.int_desc
   shutdown                         = false
   ip_proxy_arp                     = false
   ip_redirects                     = false
