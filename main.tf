@@ -307,7 +307,7 @@ resource "equinix_metal_connection" "mg2vd" {
   metro         = var.metro_code
   redundancy    = "redundant"
   type          = "shared"
-  contact_email = trim("${trim(var.emails, "[")}", "]")
+  contact_email = tostring(var.emails)
   vrfs = [
     data.terraform_remote_state.bgp.outputs.vrf_pri,
     data.terraform_remote_state.bgp.outputs.vrf_sec
