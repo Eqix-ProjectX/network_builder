@@ -1,8 +1,6 @@
 variable "username" {}
-variable "int_pri" {}
-variable "int_sec" {}
-variable "int_desc_pri" {}
-variable "int_desc_sec" {}
+variable "int" {}
+variable "int_desc" {}
 variable "bw" {}
 variable "project_id" {}
 variable "metro_code" {}
@@ -13,3 +11,4 @@ variable "neighbor_desc_sec" {}
 variable "pri_vc" {}
 variable "sec_vc" {}
 variable "emails" {}
+variable "connection_name" {}

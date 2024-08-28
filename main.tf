@@ -78,9 +78,9 @@ locals {
 resource "iosxe_interface_ethernet" "interface_pri" {
   provider                         = iosxe.vd_pri
   type                             = "GigabitEthernet"
-  name                             = var.int_pri
+  name                             = var.int
   bandwidth                        = var.bw
-  description                      = var.int_desc_pri
+  description                      = var.int_desc
   shutdown                         = false
   ip_proxy_arp                     = false
   ip_redirects                     = false
@@ -94,9 +94,9 @@ resource "iosxe_interface_ethernet" "interface_pri" {
 resource "iosxe_interface_ethernet" "interface_sec" {
   provider                         = iosxe.vd_sec
   type                             = "GigabitEthernet"
-  name                             = var.int_sec
+  name                             = var.int
   bandwidth                        = var.bw
-  description                      = var.int_desc_sec
+  description                      = var.int
   shutdown                         = false
   ip_proxy_arp                     = false
   ip_redirects                     = false
@@ -219,17 +219,17 @@ resource "iosxe_bgp_neighbor" "neighbor_sec" {
 
 resource "iosxe_save_config" "write_pri" {
   provider = iosxe.vd_pri
-  depends_on = [ 
+  depends_on = [
     iosxe_bgp.bgp_pri, iosxe_bgp_neighbor.neighbor_pri,
     iosxe_interface_ethernet.interface_pri
-   ]
+  ]
 }
 resource "iosxe_save_config" "write_sec" {
   provider = iosxe.vd_sec
-  depends_on = [ 
+  depends_on = [
     iosxe_bgp.bgp_sec, iosxe_bgp_neighbor.neighbor_sec,
     iosxe_interface_ethernet.interface_sec
-   ]
+  ]
 }
 
 resource "equinix_fabric_connection" "vd2mg_pri" {
@@ -255,13 +255,13 @@ resource "equinix_fabric_connection" "vd2mg_pri" {
       }
       interface {
         type = "NETWORK"
-        id = 7
+        id   = var.int
       }
     }
   }
   z_side {
     service_token {
-      uuid = data.terraform_remote_state.bgp.outputs.connection_token_pri
+      uuid = equinix_metal_connection.mg2vd.service_tokens[0].id
     }
   }
 }
@@ -271,7 +271,7 @@ resource "equinix_fabric_connection" "vd2mg_sec" {
   type = "EVPL_VC"
   redundancy {
     priority = "SECONDARY"
-    group = one(equinix_fabric_connection.vd2mg_pri.redundancy).group
+    group    = one(equinix_fabric_connection.vd2mg_pri.redundancy).group
   }
   notifications {
     type   = "ALL"
@@ -290,13 +290,27 @@ resource "equinix_fabric_connection" "vd2mg_sec" {
       }
       interface {
         type = "NETWORK"
-        id = 7
+        id   = var.int
       }
     }
   }
   z_side {
     service_token {
-      uuid = data.terraform_remote_state.bgp.outputs.connection_token_sec
+      uuid = equinix_metal_connection.mg2vd.service_tokens[1].id
+    }
   }
-  }
+}
+
+resource "equinix_metal_connection" "mg2vd" {
+  name          = var.connection_name
+  project_id    = var.project_id
+  metro         = var.metro_code
+  redundancy    = "redundant"
+  type          = "shared"
+  contact_email = trim(trim(var.emails, "["), "]")
+  vrfs = [
+    data.terraform_remote_state.bgp.outputs.vrf_pri,
+    data.terraform_remote_state.bgp.outputs.vrf_sec
+  ]
+  service_token_type = "z_side"
 }
