@@ -21,9 +21,11 @@
 # output "ssh_ip_vd_sec" {
 #   value = module.ne.ssh_ip_vd_sec
 # }
-output "toke_pri" {
+output "token_pri" {
   value = equinix_metal_connection.mg2vd.service_tokens[0].id
+  sensitive = true
 }
-output "toke_sec" {
+output "token_sec" {
   value = equinix_metal_connection.mg2vd.service_tokens[1].id
+  sensitive = true
 }
