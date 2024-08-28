@@ -219,17 +219,17 @@ resource "iosxe_bgp_neighbor" "neighbor_sec" {
 
 resource "iosxe_save_config" "write_pri" {
   provider = iosxe.vd_pri
-  depends_on = [ 
+  depends_on = [
     iosxe_bgp.bgp_pri, iosxe_bgp_neighbor.neighbor_pri,
     iosxe_interface_ethernet.interface_pri
-   ]
+  ]
 }
 resource "iosxe_save_config" "write_sec" {
   provider = iosxe.vd_sec
-  depends_on = [ 
+  depends_on = [
     iosxe_bgp.bgp_sec, iosxe_bgp_neighbor.neighbor_sec,
     iosxe_interface_ethernet.interface_sec
-   ]
+  ]
 }
 
 resource "equinix_fabric_connection" "vd2mg_pri" {
@@ -255,7 +255,7 @@ resource "equinix_fabric_connection" "vd2mg_pri" {
       }
       interface {
         type = "NETWORK"
-        id = var.int
+        id   = var.int
       }
     }
   }
@@ -271,7 +271,7 @@ resource "equinix_fabric_connection" "vd2mg_sec" {
   type = "EVPL_VC"
   redundancy {
     priority = "SECONDARY"
-    group = one(equinix_fabric_connection.vd2mg_pri.redundancy).group
+    group    = one(equinix_fabric_connection.vd2mg_pri.redundancy).group
   }
   notifications {
     type   = "ALL"
@@ -290,14 +290,14 @@ resource "equinix_fabric_connection" "vd2mg_sec" {
       }
       interface {
         type = "NETWORK"
-        id = var.int
+        id   = var.int
       }
     }
   }
   z_side {
     service_token {
       uuid = equinix_metal_connection.mg2vd.service_tokens[1].id
-  }
+    }
   }
 }
 
