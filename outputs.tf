@@ -21,3 +21,9 @@
 # output "ssh_ip_vd_sec" {
 #   value = module.ne.ssh_ip_vd_sec
 # }
+output "toke_pri" {
+  value = equinix_metal_connection.mg2vd.service_tokens[0].id
+}
+output "toke_sec" {
+  value = equinix_metal_connection.mg2vd.service_tokens[1].id
+}
