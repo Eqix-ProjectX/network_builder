@@ -62,20 +62,20 @@ locals {
   ipv4_mg_sec = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 1)
 }
 locals {
-  ipv4_pri1 = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_pri}/${data.terraform_remote_state.bgp.outputs.cidr}", 2)
+  ipv4_pri = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_pri}/${data.terraform_remote_state.bgp.outputs.cidr}", 2)
 }
+# locals {
+#   ipv4_pri2 = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_pri}/${data.terraform_remote_state.bgp.outputs.cidr}", 3)
+# }
 locals {
-  ipv4_pri2 = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_pri}/${data.terraform_remote_state.bgp.outputs.cidr}", 3)
+  ipv4_sec = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 2)
 }
-locals {
-  ipv4_sec1 = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 2)
-}
-locals {
-  ipv4_sec2 = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 3)
-}
+# locals {
+#   ipv4_sec2 = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 3)
+# }
 
 # IOS-XE configuration
-resource "iosxe_interface_ethernet" "interface_pri1" {
+resource "iosxe_interface_ethernet" "interface_pri" {
   provider                         = iosxe.vd_pri
   type                             = "GigabitEthernet"
   name                             = var.int_pri
@@ -85,43 +85,13 @@ resource "iosxe_interface_ethernet" "interface_pri1" {
   ip_proxy_arp                     = false
   ip_redirects                     = false
   ip_unreachables                  = false
-  ipv4_address                     = local.ipv4_pri1
-  ipv4_address_mask                = cidrnetmask("${local.ipv4_pri1}/${data.terraform_remote_state.bgp.outputs.cidr}")
-  snmp_trap_link_status            = true
-  logging_event_link_status_enable = true
-}
-resource "iosxe_interface_ethernet" "interface_sec1" {
-  provider                         = iosxe.vd_pri
-  type                             = "GigabitEthernet"
-  name                             = var.int_sec
-  bandwidth                        = var.bw
-  description                      = var.int_desc_sec
-  shutdown                         = false
-  ip_proxy_arp                     = false
-  ip_redirects                     = false
-  ip_unreachables                  = false
-  ipv4_address                     = local.ipv4_sec1
-  ipv4_address_mask                = cidrnetmask("${local.ipv4_sec1}/${data.terraform_remote_state.bgp.outputs.cidr}")
+  ipv4_address                     = local.ipv4_pri
+  ipv4_address_mask                = cidrnetmask("${local.ipv4_pri}/${data.terraform_remote_state.bgp.outputs.cidr}")
   snmp_trap_link_status            = true
   logging_event_link_status_enable = true
 }
 
-resource "iosxe_interface_ethernet" "interface_pri2" {
-  provider                         = iosxe.vd_sec
-  type                             = "GigabitEthernet"
-  name                             = var.int_pri
-  bandwidth                        = var.bw
-  description                      = var.int_desc_pri
-  shutdown                         = false
-  ip_proxy_arp                     = false
-  ip_redirects                     = false
-  ip_unreachables                  = false
-  ipv4_address                     = local.ipv4_pri2
-  ipv4_address_mask                = cidrnetmask("${local.ipv4_pri2}/${data.terraform_remote_state.bgp.outputs.cidr}")
-  snmp_trap_link_status            = true
-  logging_event_link_status_enable = true
-}
-resource "iosxe_interface_ethernet" "interface_sec2" {
+resource "iosxe_interface_ethernet" "interface_sec" {
   provider                         = iosxe.vd_sec
   type                             = "GigabitEthernet"
   name                             = var.int_sec
@@ -131,11 +101,58 @@ resource "iosxe_interface_ethernet" "interface_sec2" {
   ip_proxy_arp                     = false
   ip_redirects                     = false
   ip_unreachables                  = false
-  ipv4_address                     = local.ipv4_sec2
-  ipv4_address_mask                = cidrnetmask("${local.ipv4_sec2}/${data.terraform_remote_state.bgp.outputs.cidr}")
+  ipv4_address                     = local.ipv4_sec
+  ipv4_address_mask                = cidrnetmask("${local.ipv4_sec}/${data.terraform_remote_state.bgp.outputs.cidr}")
   snmp_trap_link_status            = true
   logging_event_link_status_enable = true
 }
+
+# resource "iosxe_interface_ethernet" "interface_sec1" {
+#   provider                         = iosxe.vd_pri
+#   type                             = "GigabitEthernet"
+#   name                             = var.int_sec
+#   bandwidth                        = var.bw
+#   description                      = var.int_desc_sec
+#   shutdown                         = false
+#   ip_proxy_arp                     = false
+#   ip_redirects                     = false
+#   ip_unreachables                  = false
+#   ipv4_address                     = local.ipv4_sec1
+#   ipv4_address_mask                = cidrnetmask("${local.ipv4_sec1}/${data.terraform_remote_state.bgp.outputs.cidr}")
+#   snmp_trap_link_status            = true
+#   logging_event_link_status_enable = true
+# }
+
+# resource "iosxe_interface_ethernet" "interface_pri2" {
+#   provider                         = iosxe.vd_sec
+#   type                             = "GigabitEthernet"
+#   name                             = var.int_pri
+#   bandwidth                        = var.bw
+#   description                      = var.int_desc_pri
+#   shutdown                         = false
+#   ip_proxy_arp                     = false
+#   ip_redirects                     = false
+#   ip_unreachables                  = false
+#   ipv4_address                     = local.ipv4_pri2
+#   ipv4_address_mask                = cidrnetmask("${local.ipv4_pri2}/${data.terraform_remote_state.bgp.outputs.cidr}")
+#   snmp_trap_link_status            = true
+#   logging_event_link_status_enable = true
+# }
+# resource "iosxe_interface_ethernet" "interface_sec2" {
+#   provider                         = iosxe.vd_sec
+#   type                             = "GigabitEthernet"
+#   name                             = var.int_sec
+#   bandwidth                        = var.bw
+#   description                      = var.int_desc_sec
+#   shutdown                         = false
+#   ip_proxy_arp                     = false
+#   ip_redirects                     = false
+#   ip_unreachables                  = false
+#   ipv4_address                     = local.ipv4_sec2
+#   ipv4_address_mask                = cidrnetmask("${local.ipv4_sec2}/${data.terraform_remote_state.bgp.outputs.cidr}")
+#   snmp_trap_link_status            = true
+#   logging_event_link_status_enable = true
+# }
 resource "iosxe_bgp" "bgp_pri" {
   provider             = iosxe.vd_pri
   asn                  = var.vnf_asn
@@ -147,7 +164,7 @@ resource "iosxe_bgp" "bgp_sec" {
   log_neighbor_changes = true
 }
 
-resource "iosxe_bgp_neighbor" "neighbor_pri1" {
+resource "iosxe_bgp_neighbor" "neighbor_pri" {
   provider                = iosxe.vd_pri
   asn                     = var.vnf_asn
   ip                      = local.ipv4_mg_pri
@@ -157,27 +174,8 @@ resource "iosxe_bgp_neighbor" "neighbor_pri1" {
   disable_connected_check = false
   log_neighbor_changes    = true
 }
-resource "iosxe_bgp_neighbor" "neighbor_sec1" {
-  provider                = iosxe.vd_pri
-  asn                     = var.vnf_asn
-  ip                      = local.ipv4_mg_sec
-  remote_as               = data.terraform_remote_state.bgp.outputs.vrf_asn
-  description             = var.neighbor_desc_sec
-  shutdown                = false
-  disable_connected_check = false
-  log_neighbor_changes    = true
-}
-resource "iosxe_bgp_neighbor" "neighbor_pri2" {
-  provider                = iosxe.vd_sec
-  asn                     = var.vnf_asn
-  ip                      = local.ipv4_mg_pri
-  remote_as               = data.terraform_remote_state.bgp.outputs.vrf_asn
-  description             = var.neighbor_desc_pri
-  shutdown                = false
-  disable_connected_check = false
-  log_neighbor_changes    = true
-}
-resource "iosxe_bgp_neighbor" "neighbor_sec2" {
+
+resource "iosxe_bgp_neighbor" "neighbor_sec" {
   provider                = iosxe.vd_sec
   asn                     = var.vnf_asn
   ip                      = local.ipv4_mg_sec
@@ -188,11 +186,50 @@ resource "iosxe_bgp_neighbor" "neighbor_sec2" {
   log_neighbor_changes    = true
 }
 
+# resource "iosxe_bgp_neighbor" "neighbor_sec1" {
+#   provider                = iosxe.vd_pri
+#   asn                     = var.vnf_asn
+#   ip                      = local.ipv4_mg_sec
+#   remote_as               = data.terraform_remote_state.bgp.outputs.vrf_asn
+#   description             = var.neighbor_desc_sec
+#   shutdown                = false
+#   disable_connected_check = false
+#   log_neighbor_changes    = true
+# }
+# resource "iosxe_bgp_neighbor" "neighbor_pri2" {
+#   provider                = iosxe.vd_sec
+#   asn                     = var.vnf_asn
+#   ip                      = local.ipv4_mg_pri
+#   remote_as               = data.terraform_remote_state.bgp.outputs.vrf_asn
+#   description             = var.neighbor_desc_pri
+#   shutdown                = false
+#   disable_connected_check = false
+#   log_neighbor_changes    = true
+# }
+# resource "iosxe_bgp_neighbor" "neighbor_sec2" {
+#   provider                = iosxe.vd_sec
+#   asn                     = var.vnf_asn
+#   ip                      = local.ipv4_mg_sec
+#   remote_as               = data.terraform_remote_state.bgp.outputs.vrf_asn
+#   description             = var.neighbor_desc_sec
+#   shutdown                = false
+#   disable_connected_check = false
+#   log_neighbor_changes    = true
+# }
+
 resource "iosxe_save_config" "write_pri" {
   provider = iosxe.vd_pri
+  depends_on = [ 
+    iosxe_bgp.bgp_pri, iosxe_bgp_neighbor.neighbor_pri,
+    iosxe_interface_ethernet.interface_pri
+   ]
 }
 resource "iosxe_save_config" "write_sec" {
   provider = iosxe.vd_sec
+  depends_on = [ 
+    iosxe_bgp.bgp_sec, iosxe_bgp_neighbor.neighbor_sec,
+    iosxe_interface_ethernet.interface_sec
+   ]
 }
 
 resource "equinix_fabric_connection" "vd2mg_pri" {
