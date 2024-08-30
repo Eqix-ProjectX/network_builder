@@ -56,23 +56,11 @@ data "terraform_remote_state" "bgp" {
 }
 
 locals {
-  ipv4_mg_pri = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_pri}/${data.terraform_remote_state.bgp.outputs.cidr}", 1)
+  ipv4_mg_pri = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges, 1)
+  ipv4_mg_sec = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges_sec, 1)
+  ipv4_pri = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges, 2)
+  ipv4_sec = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges_sec, 2)
 }
-locals {
-  ipv4_mg_sec = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 1)
-}
-locals {
-  ipv4_pri = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_pri}/${data.terraform_remote_state.bgp.outputs.cidr}", 2)
-}
-# locals {
-#   ipv4_pri2 = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_pri}/${data.terraform_remote_state.bgp.outputs.cidr}", 3)
-# }
-locals {
-  ipv4_sec = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 2)
-}
-# locals {
-#   ipv4_sec2 = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 3)
-# }
 
 # IOS-XE configuration
 resource "iosxe_interface_ethernet" "interface_pri" {
@@ -265,7 +253,6 @@ resource "equinix_fabric_connection" "vd2mg_pri" {
     }
   }
 }
-
 resource "equinix_fabric_connection" "vd2mg_sec" {
   name = var.sec_vc
   type = "EVPL_VC"
@@ -301,6 +288,11 @@ resource "equinix_fabric_connection" "vd2mg_sec" {
   }
 }
 
+# resource "time_sleep" "wait_30_sec" {
+#   create_duration = "30s"
+#   depends_on      = [equinix_metal_connection.mg2vd]
+# }
+
 resource "equinix_metal_connection" "mg2vd" {
   name          = var.connection_name
   project_id    = var.project_id
@@ -314,3 +306,13 @@ resource "equinix_metal_connection" "mg2vd" {
   ]
   service_token_type = "z_side"
 }
+
+# resource "equinix_metal_virtual_circuit" "peer_pri" {
+#   project_id    = var.project_id
+#   connection_id = equinix_metal_connection.mg2vd.id
+#   port_id       = equinix_metal_connection.mg2vd.ports[0].id
+#   vrf_id        = data.terraform_remote_state.bgp.outputs.vrf_pri
+#   peer_asn      = var.vnf_asn
+#   subnet        = cidrsubnet(local.peer_range_pri, 30 - substr(local.peer_range_pri, length(local.peer_range_pri) - 2, 2), 0)
+#   depends_on    = [time_sleep.wait_30_sec]
+# }
