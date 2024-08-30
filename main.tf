@@ -58,8 +58,8 @@ data "terraform_remote_state" "bgp" {
 locals {
   ipv4_mg_pri = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges, 1)
   ipv4_mg_sec = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges_sec, 1)
-  ipv4_pri = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges, 2)
-  ipv4_sec = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges_sec, 2)
+  ipv4_pri    = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges, 2)
+  ipv4_sec    = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges_sec, 2)
 }
 
 # IOS-XE configuration
