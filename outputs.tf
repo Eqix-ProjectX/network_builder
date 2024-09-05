@@ -23,10 +23,10 @@
 # }
 
 output "token_pri" {
-  value     = equinix_metal_connection.mg2vd.service_tokens[0].id
+  value     = equinix_metal_connection.vrf2vd.service_tokens[0].id
   sensitive = true
 }
 output "token_sec" {
-  value     = equinix_metal_connection.mg2vd.service_tokens[1].id
+  value     = equinix_metal_connection.vrf2vd.service_tokens[1].id
   sensitive = true
 }
