@@ -222,7 +222,7 @@ resource "iosxe_bgp_neighbor" "neighbor_sec" {
 #   ]
 # }
 
-resource "equinix_fabric_connection" "vd2mg_pri" {
+resource "equinix_fabric_connection" "vd2vrf_pri" {
   name = var.pri_vc
   type = "EVPL_VC"
   redundancy {
@@ -255,12 +255,12 @@ resource "equinix_fabric_connection" "vd2mg_pri" {
     }
   }
 }
-resource "equinix_fabric_connection" "vd2mg_sec" {
+resource "equinix_fabric_connection" "vd2vrf_sec" {
   name = var.sec_vc
   type = "EVPL_VC"
   redundancy {
     priority = "SECONDARY"
-    group    = one(equinix_fabric_connection.vd2mg_pri.redundancy).group
+    group    = one(equinix_fabric_connection.vd2vrf_pri.redundancy).group
   }
   notifications {
     type   = "ALL"
