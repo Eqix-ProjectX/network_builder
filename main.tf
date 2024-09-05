@@ -56,23 +56,13 @@ data "terraform_remote_state" "bgp" {
 }
 
 locals {
-  ipv4_mg_pri = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_pri}/${data.terraform_remote_state.bgp.outputs.cidr}", 1)
+  ipv4_mg_pri   = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges[1], 1)
+  ipv4_mg_sec   = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges_sec[1], 1)
+  ipv4_pri      = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges[1], 2)
+  ipv4_sec      = cidrhost(data.terraform_remote_state.bgp.outputs.vrf_ranges_sec[1], 2)
+  # vlan4peer_pri = [for z in equinix_fabric_connection.vd2mg_pri.z_side : [for ap in z.access_point : [for lp in ap.link_protocol : lp.vlan_tag]]][0][0][0]
+  # vlan4peer_sec = [for z in equinix_fabric_connection.vd2mg_sec.z_side : [for ap in z.access_point : [for lp in ap.link_protocol : lp.vlan_tag]]][0][0][0]
 }
-locals {
-  ipv4_mg_sec = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 1)
-}
-locals {
-  ipv4_pri = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_pri}/${data.terraform_remote_state.bgp.outputs.cidr}", 2)
-}
-# locals {
-#   ipv4_pri2 = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_pri}/${data.terraform_remote_state.bgp.outputs.cidr}", 3)
-# }
-locals {
-  ipv4_sec = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 2)
-}
-# locals {
-#   ipv4_sec2 = cidrhost("${data.terraform_remote_state.bgp.outputs.network_range_sec}/${data.terraform_remote_state.bgp.outputs.cidr}", 3)
-# }
 
 # IOS-XE configuration
 resource "iosxe_interface_ethernet" "interface_pri" {
@@ -217,20 +207,20 @@ resource "iosxe_bgp_neighbor" "neighbor_sec" {
 #   log_neighbor_changes    = true
 # }
 
-resource "iosxe_save_config" "write_pri" {
-  provider = iosxe.vd_pri
-  depends_on = [
-    iosxe_bgp.bgp_pri, iosxe_bgp_neighbor.neighbor_pri,
-    iosxe_interface_ethernet.interface_pri
-  ]
-}
-resource "iosxe_save_config" "write_sec" {
-  provider = iosxe.vd_sec
-  depends_on = [
-    iosxe_bgp.bgp_sec, iosxe_bgp_neighbor.neighbor_sec,
-    iosxe_interface_ethernet.interface_sec
-  ]
-}
+# resource "iosxe_save_config" "write_pri" {
+#   provider = iosxe.vd_pri
+#   depends_on = [
+#     iosxe_bgp.bgp_pri, iosxe_bgp_neighbor.neighbor_pri,
+#     iosxe_interface_ethernet.interface_pri
+#   ]
+# }
+# resource "iosxe_save_config" "write_sec" {
+#   provider = iosxe.vd_sec
+#   depends_on = [
+#     iosxe_bgp.bgp_sec, iosxe_bgp_neighbor.neighbor_sec,
+#     iosxe_interface_ethernet.interface_sec
+#   ]
+# }
 
 resource "equinix_fabric_connection" "vd2mg_pri" {
   name = var.pri_vc
@@ -261,11 +251,10 @@ resource "equinix_fabric_connection" "vd2mg_pri" {
   }
   z_side {
     service_token {
-      uuid = equinix_metal_connection.mg2vd.service_tokens[0].id
+      uuid = equinix_metal_connection.vrf2vd.service_tokens[0].id
     }
   }
 }
-
 resource "equinix_fabric_connection" "vd2mg_sec" {
   name = var.sec_vc
   type = "EVPL_VC"
@@ -296,12 +285,20 @@ resource "equinix_fabric_connection" "vd2mg_sec" {
   }
   z_side {
     service_token {
-      uuid = equinix_metal_connection.mg2vd.service_tokens[1].id
+      uuid = equinix_metal_connection.vrf2vd.service_tokens[1].id
     }
   }
 }
 
-resource "equinix_metal_connection" "mg2vd" {
+# resource "time_sleep" "wait_2_min" {
+#   create_duration = "2m"
+#   depends_on = [
+#     equinix_fabric_connection.vd2mg_pri,
+#     equinix_fabric_connection.vd2mg_sec
+#   ]
+# }
+
+resource "equinix_metal_connection" "vrf2vd" {
   name          = var.connection_name
   project_id    = var.project_id
   metro         = var.metro_code
@@ -314,3 +311,31 @@ resource "equinix_metal_connection" "mg2vd" {
   ]
   service_token_type = "z_side"
 }
+
+# resource "equinix_metal_virtual_circuit" "peer_pri" {
+#   project_id = var.project_id
+#   # virtual_circuit_id = equinix_fabric_connection.vd2mg_pri.uuid
+#   connection_id = equinix_metal_connection.vrf2vd.id
+#   port_id       = equinix_metal_connection.vrf2vd.ports[0].id
+#   vrf_id        = data.terraform_remote_state.bgp.outputs.vrf_pri
+#   peer_asn      = var.vnf_asn
+#   subnet        = cidrsubnet(data.terraform_remote_state.bgp.outputs.vrf_ranges[1], 5, 0)
+#   metal_ip      = local.ipv4_mg_pri
+#   customer_ip   = local.ipv4_pri
+#   nni_vlan      = [for z in equinix_fabric_connection.vd2mg_pri.z_side : [for ap in z.access_point : [for lp in ap.link_protocol : lp.vlan_tag]]][0][0][0]
+#   depends_on    = [time_sleep.wait_2_min,
+#   equinix_fabric_connection.vd2mg_pri]
+# }
+# resource "equinix_metal_virtual_circuit" "peer_sec" {
+#   project_id         = var.project_id
+#   # virtual_circuit_id = equinix_fabric_connection.vd2mg_sec.uuid
+#   connection_id = equinix_metal_connection.vrf2vd.id
+#   port_id    = equinix_metal_connection.vrf2vd.ports[1].id
+#   vrf_id     = data.terraform_remote_state.bgp.outputs.vrf_sec
+#   peer_asn   = var.vnf_asn
+#   subnet     = cidrsubnet(data.terraform_remote_state.bgp.outputs.vrf_ranges_sec[1], 5, 0)
+#   metal_ip = local.ipv4_mg_sec
+#   customer_ip = local.ipv4_sec
+#   nni_vlan = local.vlan4peer_sec
+#   depends_on = [time_sleep.wait_2_min]
+# }
