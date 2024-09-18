@@ -17,24 +17,24 @@ variable "connection_name" {}
 #vipin - aws details 
 variable "aws_access_key" {}
 variable "aws_secret_key" {}
-variable  "profile_uuid" {}
-variable  "awslocation" {}
+variable "profile_uuid" {}
+variable "awslocation" {}
 variable "seller_region" {}
 variable "authentication_key" {}
 
 #vipin - azure details
- variable "azure_client_id" {}
- variable "azure_client_secret" {}
- variable "azure_tenant_id" {}
- variable "azure_subscription_id" {}
- variable "ERCircuitName" {}
- variable "Azureresourcegroupname" {}
- variable "Azurelocation" {}
- variable "Azurepeeringlocation" {}
- variable "ERbandwidth" {}
- variable "environment" {}
- variable "FCRtoAzurespeed" {}
- variable "Azuremetrocode" {}
+variable "azure_client_id" {}
+variable "azure_client_secret" {}
+variable "azure_tenant_id" {}
+variable "azure_subscription_id" {}
+variable "ERCircuitName" {}
+variable "Azureresourcegroupname" {}
+variable "Azurelocation" {}
+variable "Azurepeeringlocation" {}
+variable "ERbandwidth" {}
+variable "environment" {}
+variable "FCRtoAzurespeed" {}
+variable "Azuremetrocode" {}
 
 
 #vipin ecx details 
