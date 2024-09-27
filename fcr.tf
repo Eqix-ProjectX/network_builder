@@ -1,4 +1,4 @@
-##vipin - module to spin up FCR
+/*##vipin - module to spin up FCR
 data "terraform_remote_state" "fcr_id" {
   backend = "remote"
 
@@ -106,3 +106,4 @@ resource "equinix_fabric_connection" "L2_FCRSV_to_Azure" {
     }
   }
 }
+*/
