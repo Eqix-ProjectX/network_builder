@@ -1,3 +1,4 @@
+/*
 ##vipin - module to spin up FCR
 data "terraform_remote_state" "fcr_id" {
   backend = "remote"
@@ -136,7 +137,7 @@ resource "equinix_fabric_routing_protocol" "L3_FCRSG_to_AWS_AWSside" {
 
 }
 
-
+*/
 
 
 ##vipin - to create Azure Service Key 
